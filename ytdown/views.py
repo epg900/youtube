@@ -9,6 +9,7 @@ def ytdwn(request,link):
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
         file = str(link)
+        '''
         ft=open('/home/epgccp/epgccp/ytdown/tmpfile','r')
         tmp2=ft.read()
         ft.close()
@@ -17,8 +18,13 @@ def ytdwn(request,link):
         ft=open('/home/epgccp/epgccp/ytdown/tmpfile','w')
         ft.write(file)
         ft.close()
+        '''
         stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename=file)
-        return FileResponse(open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb'))
+        tmp4=open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb')
+        tmp5=tmp4.read()
+        tmp4.close()
+        os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
+        return HttpResponse(tmp5 , content_type='video/mp4')
     except:
         return HttpResponse ('Youtube Url Is Mistake!')
 
