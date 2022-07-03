@@ -3,7 +3,6 @@ from pytube import YouTube
 import os,subprocess
 from django.http import HttpResponse,FileResponse
 
-
 def ytdwn(request,link):
     try:
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
@@ -13,8 +12,12 @@ def ytdwn(request,link):
         tmp4=open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
+        fn=stream.default_filename
+        response=HttpResponse(tmp5, content_type='video/mp4')
+        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
+        response['Content-Disposition'] = 'filename=%s' % fn
         os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
-        return HttpResponse(tmp5 , content_type='video/mp4')
+        return response
     except:
         return HttpResponse ('Youtube Url Is Mistake!')
 
@@ -33,8 +36,12 @@ def ytlink(request):
         tmp4=open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
+        fn=stream.default_filename
+        response=HttpResponse(tmp5, content_type='video/mp4')
+        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
+        response['Content-Disposition'] = 'attachment; filename=%s' % fn
         os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
-        return HttpResponse(tmp5 , content_type='video/mp4')
+        return response
     except:
         return HttpResponse ('Youtube Url Is Mistake!!')
 
@@ -48,12 +55,15 @@ def ytmp3(request,link):
         tmp4=open('/home/epgccp/epgccp/ytdown/media/m1.mp3' , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
+        fn=stream.title + '.mp3'
+        response = HttpResponse(tmp5 , content_type='audio/mp3' )
+        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/m1.mp3')
+        response['Content-Disposition'] = 'attachment; filename=%s' % fn
         os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
         os.remove('/home/epgccp/epgccp/ytdown/media/m1.mp3')
-        return HttpResponse(tmp5 , content_type='audio/mp3')
-        return FileResponse(tmp4)
+        return response
     except:
-        return HttpResponse ('Youtube Url Is Mistake!!!!!')
+        return HttpResponse (video.description)
 
 
 def helping(request):
