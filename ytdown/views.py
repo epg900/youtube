@@ -23,11 +23,13 @@ def ytdwn(request,link):
 
 def ytlink(request):
     try:
-        txt = request.GET['url']
-        arr = txt.split("watch%3Fv%3D");
-        arr1 = arr[-1].split("watch?v=");
-        arr2 = arr1[-1].split("&");
-        link = arr2[0];
+        link=''
+        if request.method == 'GET' and 'url' in request.GET:
+            txt = request.GET['url']
+            arr = txt.split("watch%3Fv%3D");
+            arr1 = arr[-1].split("watch?v=");
+            arr2 = arr1[-1].split("&");
+            link = arr2[0];
 
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
@@ -69,13 +71,16 @@ def ytmp3(request,link):
 def helping(request):
     try:
         return HttpResponse ('''
-        <p>Use address of youtube after watch like <br>
-        <b> epgccp.pythonanaywhere.com/watch?v=PXRZaDhBf4c</b><br>
+        <p>Use address of youtube after watch like - for download video -  :<br>
+        <b> epgccp.pythonanywhere.com/ytlink?url=https://www.youtube.com/watch?v=xazlZh1lTpM</b><br>
         or<br>
-        link name like <br>
-        <b>epgccp.pythonanaywhere.com/PXRZaDhBf4c</b><br>
-        <a href="/static/epg_youtube2.xpi">youtube firefox addon 1</a></br>
-        <a href="/static/epg_youtube4.xpi">youtube firefox addon 2</a></br>
+        link name like - for play in firefox -  : <br>
+        <b>epgccp.pythonanywhere.com/xazlZh1lTpM</b><br>
+        and<br>
+        for download Mp3 Audio : <br>
+        <b>epgccp.pythonanywhere.com/mp3/xazlZh1lTpM</b><br>
+        <br>
+        <a href="/static/epg_youtube4.xpi">YouTube Firefox Addon</a></br>
         </p>
         ''')
     except:
