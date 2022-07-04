@@ -2,6 +2,7 @@ from django.shortcuts import render
 from pytube import YouTube
 import os,subprocess
 from django.http import HttpResponse,FileResponse
+import re
 
 def ytdwn(request,link):
     try:
@@ -13,6 +14,7 @@ def ytdwn(request,link):
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
+        fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
         response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
         response['Content-Disposition'] = 'filename=%s' % fn
@@ -39,6 +41,7 @@ def ytlink(request):
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
+        fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
         response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
         response['Content-Disposition'] = 'attachment; filename=%s' % fn
@@ -58,6 +61,7 @@ def ytmp3(request,link):
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.title + '.mp3'
+        fn=re.sub(r"\s+", '_', fn)
         response = HttpResponse(tmp5 , content_type='audio/mp3' )
         response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/m1.mp3')
         response['Content-Disposition'] = 'attachment; filename=%s' % fn
