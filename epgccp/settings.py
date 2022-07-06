@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v@38^a1-edv)32cuz&-ccx83ypdp#dav$v7^vkvm$_suk@ice#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['epgccp.pythonanywhere.com']
+ALLOWED_HOSTS = ['ytdown.pythonanywhere.com']
 
 
 # Application definition
@@ -127,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # default static files settings for PythonAnywhere.
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = '/home/epgccp/epgccp/media'
+MEDIA_ROOT = '/home/ytdown/youtube/epgccp/media'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/epgccp/epgccp/static'
+STATIC_ROOT = '/home/ytdown/youtube/epgccp/static'
 STATIC_URL = '/static/'

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 from pytube import YouTube
 import os,subprocess
 from django.http import HttpResponse,FileResponse
@@ -14,16 +15,17 @@ def ytdwn(request,link):
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
         file = str(link)
-        stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename=file)
-        tmp4=open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb')
+        media_dir=os.path.join(settings.BASE_DIR,'ytdown','media')
+        stream.download(output_path=media_dir,filename=file)
+        tmp4=open(media_dir + '/' + file , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
         fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
-        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
+        response['Content-Length'] = os.path.getsize(media_dir + '/' + file)
         response['Content-Disposition'] = 'filename=%s' % fn
-        os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
+        os.remove(media_dir + '/' + file)
         return response
     except:
         return HttpResponse ('Youtube Url Is Mistake!')
@@ -32,7 +34,8 @@ def sub(request,lang,link):
     try:
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
-        stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename='a.mp4')
+        media_dir=os.path.join(settings.BASE_DIR,'ytdown','media')
+        stream.download(output_path=media_dir,filename='a.mp4')
 
         #srt=YouTubeTranscriptApi.get_transcript(link)
         transcripts = YouTubeTranscriptApi.list_transcripts(link)
@@ -46,23 +49,24 @@ def sub(request,lang,link):
         fmt=WebVTTFormatter()
         vtt=fmt.format_transcript(pars)
 
-        f=open('/home/epgccp/epgccp/ytdown/media/sub.vtt', 'w', encoding='utf-8')
+        f=open(media_dir + '/sub.vtt', 'w', encoding='utf-8')
         f.write(vtt)
         f.close()
 
-        subprocess.run(['ffmpeg','-i', os.path.join('/home/epgccp/epgccp/ytdown/media/a.mp4' ),'-vf','subtitles=/home/epgccp/epgccp/ytdown/media/sub.vtt',os.path.join('/home/epgccp/epgccp/ytdown/media/out.mp4')])
+        subtitle='subtitles=%s/sub.vtt' % media_dir
+        subprocess.run(['ffmpeg','-i', os.path.join(media_dir , 'a.mp4' ),'-vf',subtitle,os.path.join(media_dir,'out.mp4')])
 
-        tmp4=open('/home/epgccp/epgccp/ytdown/media/out.mp4' , 'rb')
+        tmp4=open(media_dir + '/out.mp4' , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
         fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
-        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/out.mp4')
+        response['Content-Length'] = os.path.getsize(media_dir + '/out.mp4')
         response['Content-Disposition'] = 'filename=%s' % fn
-        os.remove('/home/epgccp/epgccp/ytdown/media/a.mp4')
-        os.remove('/home/epgccp/epgccp/ytdown/media/sub.vtt')
-        os.remove('/home/epgccp/epgccp/ytdown/media/out.mp4')
+        os.remove(media_dir + '/a.mp4')
+        os.remove(media_dir + '/sub.vtt')
+        os.remove(media_dir + '/out.mp4')
         return response
     except:
         return HttpResponse ('This video dont have subtitle !')
@@ -71,22 +75,23 @@ def abcut(request,time,link):
     try:
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
-        stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename='a.mp4')
+        media_dir=os.path.join(settings.BASE_DIR,'ytdown','media')
+        stream.download(output_path=media_dir,filename='a.mp4')
 
         start_time=time[0:2] + ':' + time[2:4]
         end_time=time[4:6] + ':' + time[6:8]
-        subprocess.run(['ffmpeg','-i', os.path.join('/home/epgccp/epgccp/ytdown/media/a.mp4' ),'-ss',start_time,'-to',end_time,os.path.join('/home/epgccp/epgccp/ytdown/media/out.mp4')])
+        subprocess.run(['ffmpeg','-i', os.path.join(media_dir,'a.mp4' ),'-ss',start_time,'-to',end_time,os.path.join(media_dir , 'out.mp4')])
 
-        tmp4=open('/home/epgccp/epgccp/ytdown/media/out.mp4' , 'rb')
+        tmp4=open(media_dir + '/out.mp4' , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
         fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
-        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/out.mp4')
+        response['Content-Length'] = os.path.getsize(media_dir + '/out.mp4')
         response['Content-Disposition'] = 'attachment; filename=%s' % fn
-        os.remove('/home/epgccp/epgccp/ytdown/media/a.mp4')
-        os.remove('/home/epgccp/epgccp/ytdown/media/out.mp4')
+        os.remove(media_dir + '/a.mp4')
+        os.remove(media_dir + '/out.mp4')
         return response
     except:
         return HttpResponse ('Youtube Url Is Mistake!')
@@ -103,17 +108,18 @@ def ytlink(request):
 
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.get_highest_resolution()
+        media_dir=os.path.join(settings.BASE_DIR,'ytdown','media')
         file = str(link)
-        stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename=file)
-        tmp4=open('/home/epgccp/epgccp/ytdown/media/' + file , 'rb')
+        stream.download(output_path=media_dir,filename=file)
+        tmp4=open(media_dir + '/' + file , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.default_filename
         fn=re.sub(r"\s+", '_', fn)
         response=HttpResponse(tmp5, content_type='video/mp4')
-        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/' + file)
+        response['Content-Length'] = os.path.getsize(media_dir + '/' + file)
         response['Content-Disposition'] = 'attachment; filename=%s' % fn
-        os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
+        os.remove(media_dir + '/' + file)
         return response
     except:
         return HttpResponse ('Youtube Url Is Mistake!!')
@@ -122,19 +128,20 @@ def ytmp3(request,link):
     try:
         video = YouTube('https://www.youtube.com/watch?v=%s' % link)
         stream = video.streams.filter(only_audio=True).first()
+        media_dir=os.path.join(settings.BASE_DIR,'ytdown','media')
         file = str(link)
-        stream.download(output_path='/home/epgccp/epgccp/ytdown/media',filename=file)
-        subprocess.run(['ffmpeg','-i', os.path.join('/home/epgccp/epgccp/ytdown/media/', file),os.path.join('/home/epgccp/epgccp/ytdown/media/m1.mp3' )])
-        tmp4=open('/home/epgccp/epgccp/ytdown/media/m1.mp3' , 'rb')
+        stream.download(output_path=media_dir,filename=file)
+        subprocess.run(['ffmpeg','-i', os.path.join(media_dir, file),os.path.join(media_dir , 'm1.mp3' )])
+        tmp4=open(media_dir + '/m1.mp3' , 'rb')
         tmp5=tmp4.read()
         tmp4.close()
         fn=stream.title + '.mp3'
         fn=re.sub(r"\s+", '_', fn)
         response = HttpResponse(tmp5 , content_type='audio/mp3' )
-        response['Content-Length'] = os.path.getsize('/home/epgccp/epgccp/ytdown/media/m1.mp3')
+        response['Content-Length'] = os.path.getsize(media_dir + '/m1.mp3')
         response['Content-Disposition'] = 'attachment; filename=%s' % fn
-        os.remove('/home/epgccp/epgccp/ytdown/media/' + file)
-        os.remove('/home/epgccp/epgccp/ytdown/media/m1.mp3')
+        os.remove(media_dir + '/' + file)
+        os.remove(media_dir + '/m1.mp3')
         return response
     except:
         return HttpResponse (video.description)
