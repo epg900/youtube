@@ -8,7 +8,7 @@ urlpatterns = [
     path('yt/', views.ytlink ),
     path('youtube/', views.ytlink ),
     path('mp3/<str:link>/', views.ytmp3 ),
-    path('fa/<str:link>/', views.fasub ),
-    path('en/<str:link>/', views.ensub ),
+    path('ab/<str:time>/<str:link>/', views.abcut ),
+    path('<str:lang>/<str:link>/', views.sub ),
     path('<str:link>/', views.ytdwn ),
 ]
